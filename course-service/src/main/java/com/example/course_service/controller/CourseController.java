@@ -14,13 +14,13 @@ public class CourseController {
     @GetMapping
     public List<Map<String, Object>> getMockCourses() {
         return List.of(
-                Map.of(
-                        "id", 1,
-                        "tenMonHoc", "Lap trinh Java co ban",
-                        "soTinChi", 3,
-                        "soChoToiDa",40,
-                        "soChoConLai", 12
-                ),
+//                Map.of(
+//                        "id", 1,
+//                        "tenMonHoc", "Lap trinh Java co ban",
+//                        "soTinChi", 3,
+//                        "soChoToiDa",40,
+//                        "soChoConLai", 12
+//                ),
                 Map.of(
                         "id",2,
                         "tenMonHoc", "Co so du lieu",
