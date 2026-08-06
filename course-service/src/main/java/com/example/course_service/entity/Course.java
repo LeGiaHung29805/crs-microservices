@@ -1,13 +1,13 @@
 package com.example.course_service.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "course")
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Course {
@@ -17,9 +17,9 @@ public class Course {
     @Column(name = "ten_mon_hoc",nullable = false,length = 255)
     private String tenMonHoc;
     @Column(name = "so_tin_chi", nullable = false)
-    private String soTinChi;
+    private Integer soTinChi;
     @Column(name = "so_cho_toi_da",nullable = false)
-    private String soChoToiDa;
+    private Integer soChoToiDa;
     @Column(name = "so_cho_con_lai",nullable = false)
-    private String soChoConLai;
+    private Integer soChoConLai;
 }
