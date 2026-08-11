@@ -1,6 +1,6 @@
 # Tài Liệu Bản Thiết Kế API (API Blueprint) - Course Registration System (CRS)
 
-Tài liệu này liệt kê toàn bộ các API thực tế đã được triển khai của **Course Service** trong hệ thống đăng ký môn học CRS.
+Tài liệu này liệt kê toàn bộ các API thực tế đã được triển khai của các dịch vụ trong hệ thống đăng ký môn học CRS.
 
 ---
 
@@ -58,3 +58,55 @@ Quản lý thông tin chi tiết môn học và số lượng chỗ ngồi còn 
 * **Mã phản hồi**:
   * `204 No Content`: Xóa thành công.
   * `404 Not Found`: Không tìm thấy môn học để xóa.
+
+#### 1.6. Đặt chỗ cho môn học (Internal API)
+* **Endpoint**: `PATCH /internal/courses/{id}/reserve-seat`
+* **Mô tả**: Trừ bớt 1 chỗ trống của môn học khi có sinh viên đăng ký thành công.
+* **Mã phản hồi**:
+  * `200 OK`: Đặt chỗ thành công. Trả về `CourseDTO` mới cập nhật.
+  * `404 Not Found`: Không tìm thấy môn học.
+  * `409 Conflict`: Môn học đã hết chỗ, không thể đăng ký.
+
+#### 1.7. Giải phóng chỗ cho môn học (Internal API)
+* **Endpoint**: `PATCH /internal/courses/{id}/release-seat`
+* **Mô tả**: Cộng lại 1 chỗ trống khi sinh viên hủy đăng ký môn học.
+* **Mã phản hồi**:
+  * `200 OK`: Giải phóng chỗ thành công. Trả về `CourseDTO`.
+  * `404 Not Found`: Không tìm thấy môn học.
+
+---
+
+## 2. Registration Service (Dịch vụ Đăng ký)
+Quản lý đăng ký môn học của sinh viên và phối hợp với Course Service để quản lý sĩ số.
+
+### API đã triển khai:
+
+#### 2.1. Đăng ký môn học mới
+* **Endpoint**: `POST /registrations`
+* **Content-Type**: `application/json`
+* **Body Request**:
+  ```json
+  {
+    "studentId": 1,
+    "courseId": 2
+  }
+  ```
+* **Mã phản hồi**:
+  * `201 Created`: Đăng ký thành công. Trả về thông tin `Registration`.
+  * `409 Conflict`: Sinh viên đã đăng ký môn học này trước đó, hoặc lớp học đã hết chỗ, hoặc môn học không tồn tại.
+  * `400 Bad Request`: Dữ liệu đầu vào thiếu thông tin bắt buộc.
+
+#### 2.2. Hủy đăng ký môn học
+* **Endpoint**: `DELETE /registrations/{id}`
+* **Mô tả**: Hủy đăng ký môn học hiện tại theo ID của lượt đăng ký. Đồng thời khôi phục lại 1 chỗ trống cho môn học tương ứng.
+* **Mã phản hồi**:
+  * `200 OK`: Hủy thành công.
+  * `404 Not Found`: Không tìm thấy đăng ký với ID tương ứng.
+  * `409 Conflict`: Đăng ký này đã được hủy trước đó.
+
+#### 2.3. Lấy toàn bộ danh sách đăng ký
+* **Endpoint**: `GET /registrations`
+* **Mô tả**: Trả về toàn bộ danh sách các lượt đăng ký có trong hệ thống (bao gồm cả trạng thái đăng ký và đã hủy).
+* **Mã phản hồi**:
+  * `200 OK`: Thành công. Trả về danh sách JSON chứa các `Registration`.
+

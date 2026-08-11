@@ -4,19 +4,22 @@ Tài liệu này mô tả thiết kế biên giới dịch vụ của dự án �
 
 ---
 
-## 1. Trạng Thái Triển Khai Hiện Tại
+## 1. Trạng Thế Triển Khai Hiện Tại
 
-Hiện tại, hệ thống mới chỉ triển khai một dịch vụ duy nhất:
+Hiện tại, hệ thống đã triển khai hai dịch vụ chính:
 * **Course Service (Dịch vụ Môn học)**: Đóng vai trò quản lý thông tin các môn học, tín chỉ và sĩ số chỗ ngồi.
-
-Các thành phần khác bao gồm API Gateway, Student Service và Registration Service đang ở giai đoạn lên kế hoạch phát triển và chưa có mã nguồn thực tế trong dự án.
+* **Registration Service (Dịch vụ Đăng ký)**: Quản lý các lượt đăng ký môn học của sinh viên, giao tiếp với `Course Service` để cập nhật số lượng chỗ ngồi còn lại khi sinh viên thực hiện đăng ký hoặc hủy đăng ký môn học.
 
 ```mermaid
 graph TD
-    User([Sinh viên / Client]) -->|Gửi yêu cầu HTTP trực tiếp| CourseService[Course Service]
+    User([Sinh viên / Client]) -->|1. Đăng ký/Hủy/Xem đăng ký| RegistrationService[Registration Service]
+    User -->|Xem/Quản lý môn học| CourseService[Course Service]
+    
+    RegistrationService -->|2. Gọi API nội bộ: cập nhật chỗ ngồi| CourseService
     
     subgraph Database Layer
         CourseService -->|Đọc/Ghi| DB_Course[(course_db PostgreSQL)]
+        RegistrationService -->|Đọc/Ghi| DB_Reg[(registration_db PostgreSQL)]
     end
 ```
 
@@ -24,8 +27,9 @@ graph TD
 
 ## 2. Thiết Kế Cơ Sở Dữ Liệu Hiện Tại
 
-Dịch vụ duy nhất đang chạy sở hữu cơ sở dữ liệu riêng:
+Để đảm bảo tính độc lập, mỗi service sở hữu cơ sở dữ liệu riêng:
 
+### 2.1. Cơ sở dữ liệu Course Service
 * **Tên Database**: `course_db`
 * **Hệ quản trị**: PostgreSQL
 * **Bảng dữ liệu**: Bảng `course` quản lý các thông tin:
@@ -34,3 +38,13 @@ Dịch vụ duy nhất đang chạy sở hữu cơ sở dữ liệu riêng:
   * `so_tin_chi` (Số tín chỉ)
   * `so_cho_toi_da` (Số chỗ tối đa)
   * `so_cho_con_lai` (Số chỗ còn lại)
+
+### 2.2. Cơ sở dữ liệu Registration Service
+* **Tên Database**: `registration_db`
+* **Hệ quản trị**: PostgreSQL
+* **Bảng dữ liệu**: Bảng `registration` quản lý các thông tin:
+  * `id` (Khóa chính, Identity)
+  * `student_id` (ID của sinh viên đăng ký)
+  * `course_id` (ID của môn học)
+  * `trang_thai` (Trạng thái đăng ký: `DA_DANG_KY`, `DA_HUY`)
+  * `ngay_dang_ky` (Thời gian ghi nhận đăng ký)
