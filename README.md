@@ -31,25 +31,50 @@ Hiện tại, **Course Service** đã được cấu hình và sẵn sàng chạ
 * **Maven**: (Sử dụng Maven Wrapper đính kèm)
 
 ### Các bước chạy:
-1. Di chuyển vào thư mục dịch vụ môn học:
+
+#### Bước 1: Khởi chạy Course Service
+1. Di chuyển vào thư mục `course-service`:
    ```bash
    cd course-service
    ```
-2. Tạo file cấu hình môi trường `.env`:
-   * Sao chép file `.env.example` thành `.env`:
-     ```bash
-     cp .env.example .env
-     ```
-   * Mở file `.env` vừa tạo và chỉnh sửa thông tin kết nối Database PostgreSQL thực tế của bạn.
-3. Biên dịch và đóng gói dự án:
-   ```bash
-   ./mvnw clean compile
-   ```
-4. Chạy ứng dụng Spring Boot:
+2. Tạo cấu hình môi trường: Sao chép `.env.example` thành `.env` và chỉnh sửa các thông tin kết nối cơ sở dữ liệu `course_db` của bạn.
+3. Chạy ứng dụng:
    ```bash
    ./mvnw spring-boot:run
    ```
-4. Kiểm tra API lấy danh sách môn học thử nghiệm (Mock Courses) qua Endpoint:
+   *Dịch vụ sẽ khởi chạy tại cổng `8081`.*
+
+#### Bước 2: Khởi chạy Registration Service
+1. Di chuyển vào thư mục `registration-service`:
+   ```bash
+   cd registration-service
    ```
-   GET http://localhost:8081/courses
+2. Tạo cấu hình môi trường: Tạo file `.env` với các biến môi trường kết nối cơ sở dữ liệu `registration_db` tương tự như `course-service`.
+3. Chạy ứng dụng:
+   ```bash
+   ./mvnw spring-boot:run
    ```
+   *Dịch vụ sẽ khởi chạy tại cổng `8082`.*
+
+---
+
+## 4. Kiểm tra các API chính
+
+* **Lấy danh sách môn học**:
+  ```
+  GET http://localhost:8081/courses
+  ```
+* **Lấy danh sách đăng ký môn học**:
+  ```
+  GET http://localhost:8082/registrations
+  ```
+* **Đăng ký môn học mới**:
+  ```
+  POST http://localhost:8082/registrations
+  Body (JSON): { "studentId": 1, "courseId": 2 }
+  ```
+* **Hủy đăng ký môn học**:
+  ```
+  DELETE http://localhost:8082/registrations/{id}
+  ```
+
