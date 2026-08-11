@@ -4,6 +4,8 @@ import com.example.course_service.dto.CourseDTO;
 import com.example.course_service.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +19,9 @@ import java.util.Objects;
 public class CourseController {
     private final CourseService courseService;
     @GetMapping
-    public List<CourseDTO> getAll() {
-        return courseService.getAll();
+    public Page<CourseDTO> search(
+            @RequestParam(required = false) String keyword, Pageable pageable) {
+        return courseService.search(keyword, pageable);
     }
     @GetMapping("/{id}")
     public CourseDTO getById(@PathVariable Long id) {
@@ -38,4 +41,5 @@ public class CourseController {
     public void delete(@PathVariable Long id) {
         courseService.delete(id);
     }
+
 }
