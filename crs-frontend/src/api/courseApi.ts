@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 import type { Course, PagedResponse } from '../types/course';
-export const getCourses = (keywords?: string, page = 0, size = 10) => {
-    return axiosClient.get<PagedResponse<Course>>('api/courses', {
-        params: { keywords, page, size },
+export const getCourses = (keyword?: string, page = 0, size = 5) => {
+    return axiosClient.get<PagedResponse<Course>>('/api/courses', {
+        params: { keyword, page, size },
     });
-};
+};
