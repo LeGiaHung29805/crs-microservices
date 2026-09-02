@@ -8,6 +8,11 @@ interface SearchBoxProps {
 export default function SearchBox({ onSearch, placeholder }: SearchBoxProps) {
     const [inputValue, setInputValue] = useState('');
     const isFirstRender = useRef(true);
+    const onSearchRef = useRef(onSearch);
+
+    useEffect(() => {
+        onSearchRef.current = onSearch;
+    }, [onSearch]);
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -16,11 +21,11 @@ export default function SearchBox({ onSearch, placeholder }: SearchBoxProps) {
         }
 
         const timer = setTimeout(() => {
-            onSearch(inputValue.trim());
+            onSearchRef.current(inputValue.trim());
         }, 400);
 
         return () => clearTimeout(timer);
-    }, [inputValue, onSearch]);
+    }, [inputValue]);
 
     return (
         <div style={{ textAlign: 'center', marginBottom: 16 }}>
@@ -42,4 +47,5 @@ export default function SearchBox({ onSearch, placeholder }: SearchBoxProps) {
         </div>
     );
 }
+
 
