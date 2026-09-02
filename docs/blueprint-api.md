@@ -43,16 +43,20 @@ Quản lý đăng nhập và cấp phát mã thông báo JWT.
 ## 2. Course Service (Dịch vụ Môn học)
 Quản lý thông tin chi tiết môn học và số lượng chỗ ngồi còn lại cho từng môn.
 * **Cổng chạy trực tiếp (Internal Port):** `8083`
-* **Định tuyến qua Gateway:** `/api/courses/**` -> `/courses/**` và `/api/public/courses` -> `/courses`
+* **Định tuyến qua Gateway:** `/api/courses` và `/api/courses/**` -> `/courses` và `/courses/**`
 
 ### API đã triển khai:
 
-#### 2.1. Lấy danh sách toàn bộ môn học
+#### 2.1. Lấy danh sách toàn bộ môn học (có tìm kiếm & phân trang)
 * **Endpoint**: `GET /api/courses`
+* **Query Parameters**:
+  * `keyword` (Optional): Từ khóa tìm kiếm theo tên môn học (không phân biệt hoa/thường).
+  * `page` (Optional): Trang hiện tại (0-indexed, mặc định 0).
+  * `size` (Optional): Kích thước trang (mặc định 5 hoặc 10).
 * **Mô tả**: Trả về danh sách phân trang tất cả các môn học hiện có.
 * **Quyền truy cập**: Public (Không yêu cầu Token)
 * **Mã phản hồi**:
-  * `200 OK`: Thành công. Trả về mảng JSON chứa các môn học.
+  * `200 OK`: Thành công. Trả về đối tượng JSON chứa danh sách `content` và thông tin phân trang (`totalPages`, `totalElements`).
 
 #### 2.2. Lấy chi tiết môn học theo ID
 * **Endpoint**: `GET /api/courses/{id}`
@@ -64,22 +68,22 @@ Quản lý thông tin chi tiết môn học và số lượng chỗ ngồi còn 
 
 #### 2.3. Tạo mới môn học
 * **Endpoint**: `POST /api/courses`
-* **Mô tả**: Tạo mới một môn học.
+* **Mô tả**: Tạo mới một môn học vào hệ thống.
 * **Quyền truy cập**: Yêu cầu JWT Token (Role: `ADMIN`)
 * **Headers**: `Authorization: Bearer <token>`
 * **Content-Type**: `application/json`
 * **Body Request**:
   ```json
   {
-    "tenMonHoc": "Mathematics",
+    "tenMonHoc": "Kỹ thuật lập trình",
     "soTinChi": 3,
-    "soChoToiDa": 50
+    "soChoToiDa": 60
   }
   ```
 * **Mã phản hồi**:
   * `201 Created`: Tạo thành công. Trả về thông tin môn học đã tạo.
-  * `400 Bad Request`: Tên môn học để trống, số tín chỉ < 1 hoặc tên môn học đã tồn tại.
-  * `401 Unauthorized`: Token không hợp lệ hoặc thiếu Token.
+  * `400 Bad Request`: Tên môn học để trống, số tín chỉ <= 0 hoặc tên môn học đã tồn tại.
+  * `401 Unauthorized`: Token không hợp lệ, bị sửa đổi hoặc đã hết hạn.
   * `403 Forbidden`: Quyền truy cập không hợp lệ (không phải ADMIN).
 
 #### 2.4. Cập nhật môn học theo ID
@@ -91,7 +95,7 @@ Quản lý thông tin chi tiết môn học và số lượng chỗ ngồi còn 
 * **Body Request**:
   ```json
   {
-    "tenMonHoc": "Advanced Mathematics",
+    "tenMonHoc": "Kỹ thuật lập trình nâng cao",
     "soTinChi": 4,
     "soChoToiDa": 60
   }
@@ -134,7 +138,7 @@ Quản lý thông tin chi tiết môn học và số lượng chỗ ngồi còn 
 ## 3. Registration Service (Dịch vụ Đăng ký)
 Quản lý đăng ký môn học của sinh viên và phối hợp với Course Service để quản lý sĩ số.
 * **Cổng chạy trực tiếp (Internal Port):** `8082`
-* **Định tuyến qua Gateway:** `/api/registrations/**` -> `/registrations/**`
+* **Định tuyến qua Gateway:** `/api/registrations` và `/api/registrations/**` -> `/registrations` và `/registrations/**`
 
 ### API đã triển khai:
 
@@ -154,7 +158,7 @@ Quản lý đăng ký môn học của sinh viên và phối hợp với Course 
 * **Mã phản hồi**:
   * `201 Created`: Đăng ký thành công. Trả về thông tin lượt đăng ký.
   * `400 Bad Request`: Dữ liệu đầu vào thiếu thông tin bắt buộc.
-  * `401 Unauthorized`: Chưa xác thực JWT.
+  * `401 Unauthorized`: Token không hợp lệ hoặc thiếu Token.
   * `409 Conflict`: Sinh viên đã đăng ký môn học này trước đó, hoặc lớp học đã hết chỗ, hoặc môn học không tồn tại.
 
 #### 3.2. Hủy đăng ký môn học
@@ -164,16 +168,14 @@ Quản lý đăng ký môn học của sinh viên và phối hợp với Course 
 * **Headers**: `Authorization: Bearer <token>`
 * **Mã phản hồi**:
   * `200 OK`: Hủy thành công.
-  * `401 Unauthorized`: Chưa xác thực JWT.
+  * `401 Unauthorized`: Token không hợp lệ hoặc thiếu Token.
   * `404 Not Found`: Không tìm thấy đăng ký với ID tương ứng.
   * `409 Conflict`: Đăng ký này đã được hủy trước đó.
 
 #### 3.3. Lấy toàn bộ danh sách đăng ký
 * **Endpoint**: `GET /api/registrations`
-* **Mô tả**: Trả về toàn bộ danh sách các lượt đăng ký có trong hệ thống (bao gồm cả trạng thái đăng ký và đã hủy).
+* **Mô tả**: Trả về toàn bộ danh sách các lượt đăng ký có trong hệ thống.
 * **Quyền truy cập**: Yêu cầu JWT Token (Đã xác thực)
 * **Headers**: `Authorization: Bearer <token>`
 * **Mã phản hồi**:
   * `200 OK`: Thành công. Trả về danh sách JSON chứa các `Registration`.
-
-
