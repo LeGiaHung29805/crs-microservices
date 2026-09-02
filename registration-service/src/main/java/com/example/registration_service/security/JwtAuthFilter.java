@@ -23,6 +23,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
     @Value("${jwt.secret}")
     private String secret;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -31,8 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                SecretKey key =
-                        Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
                 Claims claims = Jwts.parser()
                         .verifyWith(key)
@@ -41,13 +41,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .getPayload();
                 String username = claims.getSubject();
                 String role = claims.get("role", String.class);
+                Object userIdObj = claims.get("userId");
+                Long userId = null;
+                if (userIdObj instanceof Number) {
+                    userId = ((Number) userIdObj).longValue();
+                }
+
                 var authToken = new UsernamePasswordAuthenticationToken(
-                        username, null, List.of(new
-                        SimpleGrantedAuthority("ROLE_" + role))
+                        username, userId, List.of(new SimpleGrantedAuthority("ROLE_" + role))
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (Exception e) {
                 SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"message\": \"Token không hợp lệ hoặc đã hết hạn.\"}");
+                return;
             }
         }
         filterChain.doFilter(request, response);
