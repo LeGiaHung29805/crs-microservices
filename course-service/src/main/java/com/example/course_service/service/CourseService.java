@@ -66,7 +66,7 @@ public class CourseService {
     }
     public Page<CourseDTO> search(String keyword, Pageable pageable){
         Page<Course> page = (keyword == null || keyword.isBlank()) ? courseRepository.findAll(pageable)
-                : courseRepository.findByTenMonHocIgnoreCase(keyword,pageable);
+                : courseRepository.findByTenMonHocContainingIgnoreCase(keyword, pageable);
         return page.map(this::toDTO);
     }
     @Transactional

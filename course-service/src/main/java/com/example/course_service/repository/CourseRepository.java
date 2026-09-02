@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsByTenMonHocIgnoreCase(String tenMonHoc);
-    Page<Course> findByTenMonHocIgnoreCase(String tenMonHoc, Pageable pageable);
+    Page<Course> findByTenMonHocContainingIgnoreCase(String tenMonHoc, Pageable pageable);
 }
