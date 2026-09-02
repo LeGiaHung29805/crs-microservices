@@ -8,6 +8,8 @@ interface CourseListProps {
     onRetry: () => void;
     onEdit?: (course: Course) => void;
     onDelete?: (course: Course) => void;
+    onRegister?: (course: Course) => void;
+    registeringId?: number | null;
 }
 
 export default function CourseList({
@@ -17,6 +19,8 @@ export default function CourseList({
     onRetry,
     onEdit,
     onDelete,
+    onRegister,
+    registeringId,
 }: CourseListProps) {
     if (state === 'loading') return <p>Đang tải danh sách môn học...</p>;
 
@@ -31,7 +35,7 @@ export default function CourseList({
 
     if (state === 'empty') return <p>Không tìm thấy môn học nào phù hợp.</p>;
 
-    const showActions = !!onEdit || !!onDelete;
+    const showActions = !!onEdit || !!onDelete || !!onRegister;
 
     return (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -60,6 +64,18 @@ export default function CourseList({
                                         style={{ marginLeft: 8, color: '#b91c1c' }}
                                     >
                                         Xóa
+                                    </button>
+                                )}
+                                {onRegister && (
+                                    <button
+                                        onClick={() => onRegister(course)}
+                                        disabled={course.soChoConLai === 0 || registeringId === course.id}
+                                    >
+                                        {registeringId === course.id
+                                            ? 'Đang đăng ký...'
+                                            : course.soChoConLai === 0
+                                                ? 'Hết chỗ'
+                                                : 'Đăng ký'}
                                     </button>
                                 )}
                             </td>

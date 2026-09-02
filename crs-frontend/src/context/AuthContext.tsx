@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { LoginResponse } from '../types/auth';
 
 interface AuthUser {
+    id: number;
     username: string;
     role: 'ADMIN' | 'STUDENT';
 }
@@ -25,7 +26,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const savedUser = localStorage.getItem(USER_KEY);
             const savedToken = localStorage.getItem(TOKEN_KEY);
             if (savedUser && savedToken) {
-                return JSON.parse(savedUser);
+                const parsed = JSON.parse(savedUser);
+                return {
+                    id: parsed.id || parsed.userId || 1,
+                    username: parsed.username,
+                    role: parsed.role,
+                };
             }
         } catch (err) {
             console.error('Lỗi khi đọc phiên đăng nhập từ localStorage:', err);
@@ -35,7 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const login = (data: LoginResponse) => {
         localStorage.setItem(TOKEN_KEY, data.token);
-        const authUser: AuthUser = { username: data.username, role: data.role };
+        const authUser: AuthUser = {
+            id: data.userId || 1,
+            username: data.username,
+            role: data.role,
+        };
         localStorage.setItem(USER_KEY, JSON.stringify(authUser));
         setUser(authUser);
     };
@@ -55,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error('useAuth phải được dùng bên trong AuthProvider');
