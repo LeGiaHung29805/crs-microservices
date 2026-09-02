@@ -15,15 +15,17 @@ public class JwtUtil {
     private String secret;
     @Value("${jwt.expiration-ms}")
     private long expirationMs;
-    public String generateToken(String username, String role) {
+    public String generateToken(Long userId, String username, String role)
+    {
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes());
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationMs);
+        Date expiry = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .setSubject(username)
-                .claim("role",role)
+                .claim("userId", userId)
+                .claim("role", role)
                 .setIssuedAt(now)
-                .setExpiration(expiryDate)
+                .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

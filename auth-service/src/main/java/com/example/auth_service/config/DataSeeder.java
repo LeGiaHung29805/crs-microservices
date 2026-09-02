@@ -14,7 +14,7 @@ public class DataSeeder implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args){
+    public void run(String... args) {
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setUsername("admin");
@@ -23,11 +23,18 @@ public class DataSeeder implements CommandLineRunner {
             userRepository.save(admin);
         }
         if (userRepository.findByUsername("student1").isEmpty()) {
-            User student = new User();
-            student.setUsername("student1");
-            student.setPassword(passwordEncoder.encode("student123"));
-            student.setRole("STUDENT");
-            userRepository.save(student);
+            User student1 = new User();
+            student1.setUsername("student1");
+            student1.setPassword(passwordEncoder.encode("student123"));
+            student1.setRole("STUDENT");
+            userRepository.save(student1);
+        }
+        if (userRepository.findByUsername("student2").isEmpty()) {
+            User student2 = new User();
+            student2.setUsername("student2");
+            student2.setPassword(passwordEncoder.encode("student123"));
+            student2.setRole("STUDENT");
+            userRepository.save(student2);
         }
     }
 }
