@@ -1,6 +1,6 @@
 # Course Registration System (CRS) - Hệ Thống Đăng Ký Môn Học (Microservices)
 
-Dự án này là hệ thống đăng ký môn học (Course Registration System - CRS) được xây dựng theo kiến trúc **Microservices** sử dụng Java Spring Boot và React (Vite). Hệ thống hỗ trợ sinh viên đăng nhập, tra cứu môn học, đăng ký lớp học phần, kiểm tra điều kiện sĩ số chỗ ngồi và quản lý môn học một cách độc lập qua API Gateway và cơ chế xác thực tập trung JWT.
+Dự án này là hệ thống đăng ký môn học (Course Registration System - CRS) được xây dựng theo kiến trúc **Microservices** sử dụng Java Spring Boot và React (Vite + TypeScript). Hệ thống hỗ trợ sinh viên đăng nhập, tra cứu môn học, đăng ký lớp học phần, kiểm tra điều kiện sĩ số chỗ ngồi và quản lý môn học một cách độc lập qua API Gateway và cơ chế xác thực tập trung JWT.
 
 ---
 
@@ -25,7 +25,18 @@ Dự án bao gồm **5 thành phần chính**:
 
 ---
 
-## 3. Hướng Dẫn Chạy Thử (Quick Start)
+## 3. Kiến Trúc Frontend & Bảo Mật (Frontend Architecture & Security)
+
+Ứng dụng Frontend được phát triển với **React + TypeScript + Vite**:
+* **Xác thực tập trung (`AuthContext`)**: Sử dụng React Context API để lưu trữ trạng thái đăng nhập (`user`, `isAuthenticated`). Khôi phục trạng thái đồng bộ từ `localStorage` để giữ phiên làm việc khi F5 làm mới trang.
+* **Bảo vệ đường dẫn (`ProtectedRoute`)**: Phân quyền truy cập tuyến đường dựa trên vai trò người dùng (`ADMIN` / `STUDENT`). 
+  - Trang quản trị môn học `/admin/courses` chỉ dành cho tài khoản `ADMIN`.
+  - Trang đăng ký học phần `/register-course` chỉ dành cho `STUDENT`.
+* **Axios Interceptors**: Tự động đính kèm `Authorization: Bearer <token>` vào mọi API request. Nhận diện phản hồi `401 Unauthorized` để tự động dọn dẹp bộ nhớ tạm (`localStorage`) và chuyển hướng về trang `/login`.
+
+---
+
+## 4. Hướng Dẫn Chạy Thử (Quick Start)
 
 ### Yêu cầu hệ thống:
 * **Java**: JDK 17
@@ -82,7 +93,7 @@ Dự án bao gồm **5 thành phần chính**:
 
 ---
 
-## 4. Kiểm Tra Các API Chính Qua API Gateway (Port 8080)
+## 5. Kiểm Tra Các API Chính Qua API Gateway (Port 8080)
 
 Do hệ thống đã tích hợp bảo mật JWT, bạn nên test theo thứ tự dưới đây:
 
@@ -113,6 +124,17 @@ Khi gửi request tới các API bảo mật dưới đây, bạn cần thêm He
   Body (JSON): { "tenMonHoc": "Kỹ thuật lập trình", "soTinChi": 3, "soChoToiDa": 60 }
   ```
 
+* **Cập nhật môn học (Yêu cầu tài khoản Admin)**:
+  ```
+  PUT http://localhost:8080/api/courses/{id}
+  Body (JSON): { "tenMonHoc": "Kỹ thuật lập trình nâng cao", "soTinChi": 4, "soChoToiDa": 60 }
+  ```
+
+* **Xóa môn học (Yêu cầu tài khoản Admin)**:
+  ```
+  DELETE http://localhost:8080/api/courses/{id}
+  ```
+
 * **Đăng ký môn học mới (Yêu cầu đăng nhập)**:
   ```
   POST http://localhost:8080/api/registrations
@@ -123,6 +145,3 @@ Khi gửi request tới các API bảo mật dưới đây, bạn cần thêm He
   ```
   DELETE http://localhost:8080/api/registrations/{id}
   ```
-
-
-
