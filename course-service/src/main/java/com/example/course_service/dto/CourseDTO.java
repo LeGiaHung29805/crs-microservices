@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CourseDTO {
     private Long id;
-    @NotBlank(message = "Ten mon hoc khong duoc de trong")
+    @NotBlank(message = "Tên môn học không được để trống.")
     private String tenMonHoc;
-    @NotNull(message = "So tin chi khong duoc de trong")
-    @Min(value = 1, message = "So tin chi phai lon hon 0")
+    @NotNull(message = "Số tín chỉ không được để trống.")
+    @Min(value = 1, message = "Số tín chỉ phải lớn hơn 0.")
     private Integer soTinChi;
-    @NotNull(message = "So cho toi da khong duoc de trong")
-    @Min(value = 1, message = "So cho toi da phai lon hon 0")
+    @NotNull(message = "Số chỗ tối đa không được để trống.")
+    @Min(value = 1, message = "Số chỗ tối đa phải lớn hơn 0.")
     private Integer soChoToiDa;
     private Integer soChoConLai;
 }

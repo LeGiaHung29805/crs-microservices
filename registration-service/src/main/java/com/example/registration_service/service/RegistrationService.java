@@ -20,7 +20,7 @@ public class RegistrationService {
     public Registration register(RegistrationRequestDTO dto) {
         if (registrationRepository.existsByStudentIdAndCourseIdAndTrangThai(
                 dto.getStudentId(), dto.getCourseId(), DA_DANG_KY)) {
-            throw new IllegalStateException("Sinh vien da dang ky mon hoc nay roi");
+            throw new IllegalStateException("Sinh viên đã đăng ký môn học này rồi.");
         }
         courseClient.reserveSeat(dto.getCourseId());
         Registration registration = new Registration();
@@ -33,9 +33,9 @@ public class RegistrationService {
     public void cancel(Long registrationId) {
         Registration registration =
                 registrationRepository.findById(registrationId)
-                        .orElseThrow(() -> new NoSuchElementException("Khong tim thay dang ky id = " + registrationId));
+                        .orElseThrow(() -> new NoSuchElementException("Không tìm thấy đăng ký id = " + registrationId));
         if (DA_HUY.equals(registration.getTrangThai())) {
-            throw new IllegalStateException("Dang ky nay da duoc huy truoc do");
+            throw new IllegalStateException("Đăng ký này đã được hủy trước đó.");
         }
         courseClient.releaseSeat(registration.getCourseId());
         registration.setTrangThai(DA_HUY);

@@ -26,13 +26,13 @@ public class CourseService {
     }
     public CourseDTO getById(Long id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Khong tim thay mon hoc id = " + id));
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy môn học id = " + id));
         return toDTO(course);
     }
     public CourseDTO create(CourseDTO dto) {
         if
         (courseRepository.existsByTenMonHocIgnoreCase(dto.getTenMonHoc())) {
-            throw new IllegalArgumentException("Ten mon hoc da ton tai");
+            throw new IllegalArgumentException("Tên môn học đã tồn tại");
         }
         Course course = new Course();
         course.setTenMonHoc(dto.getTenMonHoc());
@@ -43,7 +43,7 @@ public class CourseService {
     }
     public CourseDTO update(Long id, CourseDTO dto) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Khong tim thay mon hoc id = " + id));
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy môn học id = " + id));
                         course.setTenMonHoc(dto.getTenMonHoc());
         course.setSoTinChi(dto.getSoTinChi());
         course.setSoChoToiDa(dto.getSoChoToiDa());
@@ -51,7 +51,7 @@ public class CourseService {
     }
     public void delete(Long id) {
         if (!courseRepository.existsById(id)) {
-            throw new NoSuchElementException("Khong tim thay mon hoc id = " + id);
+            throw new NoSuchElementException("Không tìm thấy môn học id = " + id);
         }
         courseRepository.deleteById(id);
     }
@@ -72,9 +72,9 @@ public class CourseService {
     @Transactional
     public CourseDTO reserveSeat(Long courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new NoSuchElementException("Khong tim thay mon hoc id = " + courseId));
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy môn học id = " + courseId));
         if (course.getSoChoConLai() <= 0){
-            throw new IllegalStateException("Mon hoc da het cho, khong the dang ki");
+            throw new IllegalStateException("Môn học đã hết chỗ, không thể đăng ký");
         }
         course.setSoChoConLai(course.getSoChoConLai() - 1);
         return toDTO(courseRepository.save(course));
@@ -82,7 +82,7 @@ public class CourseService {
     @Transactional
     public CourseDTO releaseSeat(Long courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new NoSuchElementException("Khong tim thay mon hoc id = " + courseId));
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy môn học id = " + courseId));
         if (course.getSoChoConLai() < course.getSoChoToiDa()) {
             course.setSoChoConLai(course.getSoChoConLai() + 1);
         }
