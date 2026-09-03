@@ -10,6 +10,7 @@ import AdminCoursesPage from './pages/AdminCoursesPage';
 import RegisterCoursePage from './pages/RegisterCoursePage';
 import MyRegistrationsPage from './pages/MyRegistrationsPage';
 import Navbar from './components/Navbar';
+import ApiKeysPage from './pages/ApiKeysPage';
 
 function App() {
   return (
@@ -21,7 +22,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/courses" element={<CoursesPage />} />
 
-          {/* Admin Routes */}
           <Route
             path="/admin/courses"
             element={
@@ -30,10 +30,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Alias route cho /admin/course */}
           <Route path="/admin/course" element={<Navigate to="/admin/courses" replace />} />
 
-          {/* Student Routes */}
           <Route
             path="/register-course"
             element={
@@ -42,7 +40,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Alias route cho lỗi gõ thiếu/nhầm: /register-coures & /register-courses */}
           <Route path="/register-coures" element={<Navigate to="/register-course" replace />} />
           <Route path="/register-courses" element={<Navigate to="/register-course" replace />} />
 
@@ -55,8 +52,15 @@ function App() {
             }
           />
 
-          {/* Catch-all route cho đường dẫn không hợp lệ - LUÔN NẰM DƯỚI CÙNG */}
           <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route
+            path="/admin/api-keys"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <ApiKeysPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
