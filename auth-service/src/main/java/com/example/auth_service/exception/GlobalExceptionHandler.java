@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex,
                                                              WebRequest request) {
         log.error("Unhandled exception at {}", request.getDescription(false), ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Da co loi xay ra, vui long thu lai sau", request);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Đã có lỗi xảy ra, vui lòng thử lại sau.", request);
     }
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status,
                                                               String message, WebRequest request) {

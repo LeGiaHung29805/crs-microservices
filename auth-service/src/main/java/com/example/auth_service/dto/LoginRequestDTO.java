@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class LoginRequestDTO {
-    @NotBlank(message = "Username khong duoc de trong")
+    @NotBlank(message = "Tên đăng nhập không được để trống.")
     private String username;
 
-    @NotBlank(message = "Password khong duoc de trong")
+    @NotBlank(message = "Mật khẩu không được để trống.")
     private String password;
 }

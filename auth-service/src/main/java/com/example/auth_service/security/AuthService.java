@@ -17,10 +17,10 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     public LoginResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(() -> new InvalidCredentialsException("Sai username hoac password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Sai tên đăng nhập hoặc mật khẩu."));
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword()))
         {
-            throw new InvalidCredentialsException("Sai username hoac password");
+            throw new InvalidCredentialsException("Sai tên đăng nhập hoặc mật khẩu.");
         }
         String token = jwtUtil.generateToken((long) user.getId(), user.getUsername(), user.getRole());
         return new LoginResponseDTO((long) user.getId(), token, user.getUsername(), user.getRole());
