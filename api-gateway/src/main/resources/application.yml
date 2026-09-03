@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   cloud:
     gateway:
@@ -7,49 +10,51 @@ spring:
             - id: auth-service
               uri: http://localhost:8081
               predicates:
-                - Path=/api/auth/**
+                - Path=/api/auth/**, /api/api-keys/**, /api/api-keys
               filters:
-                - RewritePath=/api/auth/(?<segment>.*), /auth/${segment}
-            - id: course-service-list
-              uri: http://localhost:8083
-              predicates:
-                - Path=/api/courses
-              filters:
-                - RewritePath=/api/courses, /courses
-            - id: course-service-detail
-              uri: http://localhost:8083
-              predicates:
-                - Path=/api/courses/**
-              filters:
-                - RewritePath=/api/courses/(?<segment>.*), /courses/${segment}
-            - id: registration-service-list
-              uri: http://localhost:8082
-              predicates:
-                - Path=/api/registrations
-              filters:
-                - RewritePath=/api/registrations, /registrations
-            - id: registration-service-detail
-              uri: http://localhost:8082
-              predicates:
-                - Path=/api/registrations/**
-              filters:
-                - RewritePath=/api/registrations/(?<segment>.*),/registrations/${segment}
+                - StripPrefix=1
+
             - id: course-service-partner
               uri: http://localhost:8083
               predicates:
-                - Path=/api/public/courses
+                - Path=/api/public/courses/**, /api/public/courses
               filters:
-                - RewritePath=/api/public/courses, /courses
+                - RewritePath=/api/public/courses(?<segment>.*), /courses${segment}
+
+            - id: course-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/courses/**, /api/courses
+              filters:
+                - StripPrefix=1
+
+            - id: registration-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/registrations/**, /api/registrations
+              filters:
+                - StripPrefix=1
+
           globalcors:
             cors-configurations:
               '[/**]':
-                allowedOrigins: "http://localhost:5173"
-                allowedMethods: "*"
+                allowedOriginPatterns: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                  - PATCH
                 allowedHeaders: "*"
+                allowCredentials: true
+
 jwt:
   secret: CRS-Microservices-Secret-Key-Nam-3-Hoc-Ky-2026-Doi-Trong-Thuc-Te
+
 partner:
   api-key: crs-partner-key-2026
+
 management:
   endpoints:
     web:
